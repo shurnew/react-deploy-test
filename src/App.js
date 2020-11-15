@@ -1,9 +1,13 @@
 import React,{Component} from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import Movie from "./movie";
-import NavigationBar from "./navi";
+import Movie from "./components/movie";
+import NavigationBar from "./components/navi";
+import Slide from "./components/SlideMenu";
+import Subject from "./components/Subject";
+import SeachBox from "./components/SeachBox";
 
+var firebase = require("firebase");
 class App extends Component {
   state ={
   
@@ -14,7 +18,7 @@ class App extends Component {
   }
   //라이프사이클 마운트후
   componentDidMount(){
-      this.getMovies();
+    this.getMovies();
   }
 
   getMovies = async () => {
@@ -24,15 +28,21 @@ class App extends Component {
     });
   };
 
-  //
   renderMovies = () =>{
-    const movies = this.state.movies.map(movie=> {
-      return <Movie title={movie.title} poster={movie.large_cover_image} key={movie.id} genres={movie.genres} synopsis={movie.synopsis} />;
+    const movies = this.state.movies.map((movie, index) => {
+      return <Movie 
+        title={movie.title_english} 
+        poster={movie.large_cover_image} 
+        key={movie.id}
+        genres={movie.genres}
+        synopsis={movie.synopsis}
+        />;
     })
     return movies
   } 
 
   callApi = () =>{
+    console.log(firebase)
     return fetch("https://yts.mx/api/v2/list_movies.json?sort_by=rating")
     .then(movie => movie.json())
     .then(json => json.data.movies)
@@ -44,7 +54,13 @@ class App extends Component {
     return (
     <div className="App">
       <NavigationBar></NavigationBar>
-      {this.state.movies ? this.renderMovies():"loding" }
+      <Slide></Slide>
+      <SeachBox></SeachBox>
+      <Subject></Subject>
+      <div className = "Posts">
+        {this.state.movies ? this.renderMovies():"loding" }
+      </div>
+      
     </div>
     );
   }
